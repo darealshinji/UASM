@@ -202,16 +202,16 @@
 
 /* Uasm version info */
 #ifdef _WIN64
-#define _UASM_VERSION_STR_ "2.56"
+#define _UASM_VERSION_STR_ "2.57"
 #else
-#define _UASM_VERSION_STR_ "2.56"
+#define _UASM_VERSION_STR_ "2.57"
 #endif
-#define _UASM_VERSION_INT_ 256
+#define _UASM_VERSION_INT_ 257
 #define _UASM_VERSION_SUFFIX_ "pre"
 #define _UASM_VERSION_ _UASM_VERSION_STR_ //_UASM_VERSION_SUFFIX_
 
 #define UASM_MAJOR_VER 2
-#define UASM_MINOR_VER 55
+#define UASM_MINOR_VER 57
 #define UASM_SUBMINOR_VER 1
 
 #if defined(_WIN32) || defined(_WIN64) 
