@@ -3367,6 +3367,23 @@ ret_code codegen( struct code_info *CodeInfo, uint_32 oldofs )
                CodeInfo->prefix.rex, CodeInfo->prefix.opsiz ));
 #endif
 
+    /* UASM 2.57 - Prevent VMOVD with ymm/zmm */
+    if ((CodeInfo->token == T_VMOVD || CodeInfo->token == T_VMOVQ) && 
+        ((CodeInfo->opnd[1].type & OP_YMM || CodeInfo->opnd[1].type & OP_ZMM) ||
+        (CodeInfo->opnd[0].type & OP_YMM || CodeInfo->opnd[0].type & OP_ZMM))) {
+        EmitError(INVALID_INSTRUCTION_OPERANDS);
+    }
+
+    /* UASM 2.57 ensure 64bit code generates a proper XCHG eax,eax and not NOP */
+    if (CodeInfo->Ofssize == USE64 && CodeInfo->token == T_XCHG && CodeInfo->opnd[0].type == OP_EAX && CodeInfo->opnd[1].type == OP_EAX)
+	{
+        if (Options.line_numbers)
+            AddLinnumDataRef(get_curr_srcfile(), GetLineNumber());
+        OutputCodeByte(0x87);
+        OutputCodeByte(0xc0);
+		return(NOT_ERROR);
+	}
+
     /* UASM 2.56 - Validate the proper usage of SARX,SHLX, SHRX */
     if (CodeInfo->token == T_SARX || CodeInfo->token == T_SHLX || CodeInfo->token == T_SHRX)
     {
