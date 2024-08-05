@@ -4455,6 +4455,7 @@ static void write_sysv_default_prologue_RBP(struct proc_info *info)
 		{
 			AddLineQueueX("sub %r, %d", T_RSP, NUMQUAL(stackadj + resstack));
 		}
+		info->stackAdj = stackadj;
 	}
 
 	/* save USED vector registers */
@@ -4491,9 +4492,12 @@ static void write_sysv_default_epilogue_RBP(struct proc_info *info)
 /****************************************************************/
 {
 	int  resstack = ((ModuleInfo.win64_flags & W64F_AUTOSTACKSP) ? sym_ReservedStack->value : 0);
+	int  stackadj = 8;
 
-	int  stackadj = 0;// info->stackAdj;
-	//if (stackadj % 16 != 0) stackadj = 8;
+	if (!info->fpo && GetRegNo(info->basereg) != 4 && (info->parasize != 0 || info->locallist != NULL))
+	{
+		stackadj -= 8;
+	}
 
 	if (info->fpo)
 	{
