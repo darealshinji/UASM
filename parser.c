@@ -984,8 +984,8 @@ static ret_code idata_nofixup( struct code_info *CodeInfo, unsigned CurrOpnd, co
     CodeInfo->opnd[CurrOpnd].data32l = value;
 
 	/* 64bit immediates are restricted to MOV <reg>,<imm64> */
-	if (fits32(opndx->value64)==0 && (CodeInfo->token != T_MOV || 
-		(CodeInfo->token == T_MOV && (CodeInfo->opnd[OPND1].type & OP_R64) == 0) ))
+	if ((opndx->hlvalue != 0) || (fits32(opndx->value64)==0 && (CodeInfo->token != T_MOV ||
+		(CodeInfo->token == T_MOV && (CodeInfo->opnd[OPND1].type & OP_R64) == 0))))
 	{ 
 		/* magnitude > 64 bits? */
 		DebugMsg1(("idata_nofixup: error, hlvalue=%" I64_SPEC "X\n", opndx->hlvalue));
