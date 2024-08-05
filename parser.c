@@ -1036,8 +1036,9 @@ static ret_code idata_nofixup( struct code_info *CodeInfo, unsigned CurrOpnd, co
     } 
 	else 
 	{
-        /* use true signed values for BYTE only! */
+        /* use true signed valu es for BYTE only! */
         if ( (int_8)value == value )
+        //if (value >= -128 && value < 256)
             op_type = OP_I8;
         else if( value <= USHRT_MAX && value >= 0L - USHRT_MAX )
             op_type = OP_I16;

@@ -2599,7 +2599,6 @@ ret_code ExcFrameDirective(int i, struct asm_tok tokenarray[])
 	if (oldcodes > unw_info.CountOfCodes) {
 		return(EmitErr(TOO_MANY_UNWIND_CODES_IN_FRAME_PROC));
 	}
-	DebugMsg1(("ExcFrameDirective() exit, ok\n"));
 	return(NOT_ERROR);
 }
 
@@ -2941,39 +2940,53 @@ static enum special_token GetWin64SubReg(enum special_token srcReg,int type)
 /* ========================================================================================================= */
 /* OPTION WIN64:1 - save up to 4 register parameters for WIN64 fastcall                                      */
 /* ========================================================================================================= */
-static void win64_SaveRegParams_RBP(struct proc_info *info)
+static int win64_SaveRegParams_RBP(struct proc_info *info)
 /*******************************************************/
 {
 	int i;
 	struct dsym *param;
+	int saved = 0;
 	for (i = 0, param = info->paralist; param && (i < 4); i++)
 	{
 		/* v2.05: save XMMx if type is float/double */
 		if (param->sym.is_vararg == FALSE)
 		{
-			if (param->sym.mem_type & MT_FLOAT && param->sym.total_size == 4 && param->sym.used)
+			if (param->sym.mem_type & MT_FLOAT && param->sym.total_size == 4 && param->sym.used) {
 				AddLineQueueX("%s [%r+%u], %r", MOVE_SINGLE(), T_RSP, 8 + i * 8, T_XMM0 + i);
-			else if (param->sym.mem_type & MT_FLOAT && param->sym.total_size == 8 && param->sym.used)
+				saved++;
+			}
+			else if (param->sym.mem_type & MT_FLOAT && param->sym.total_size == 8 && param->sym.used) {
 				AddLineQueueX("%s [%r+%u], %r", MOVE_DOUBLE(), T_RSP, 8 + i * 8, T_XMM0 + i);
+				saved++;
+			}
 			else if (param->sym.used)
 			{
-				if (param->sym.mem_type == MT_BYTE || param->sym.mem_type == MT_SBYTE)
-					AddLineQueueX("mov [%r+%u], %r", T_RSP, 8 + i * 8, GetWin64SubReg(ms64_regs[i], 0) );
-				else if (param->sym.mem_type == MT_WORD || param->sym.mem_type == MT_SWORD)
-					AddLineQueueX("mov [%r+%u], %r", T_RSP, 8 + i * 8, GetWin64SubReg(ms64_regs[i], 1) );
-				else if(param->sym.mem_type == MT_DWORD || param->sym.mem_type == MT_SDWORD)
-					AddLineQueueX("mov [%r+%u], %r", T_RSP, 8 + i * 8, GetWin64SubReg(ms64_regs[i], 2) );
-				else
-					AddLineQueueX("mov [%r+%u], %r", T_RSP, 8 + i * 8, ms64_regs[i] );
+				if (param->sym.mem_type == MT_BYTE || param->sym.mem_type == MT_SBYTE) {
+					AddLineQueueX("mov [%r+%u], %r", T_RSP, 8 + i * 8, GetWin64SubReg(ms64_regs[i], 0));
+					saved++;
+				}
+				else if (param->sym.mem_type == MT_WORD || param->sym.mem_type == MT_SWORD) {
+					AddLineQueueX("mov [%r+%u], %r", T_RSP, 8 + i * 8, GetWin64SubReg(ms64_regs[i], 1));
+					saved++;
+				}
+				else if (param->sym.mem_type == MT_DWORD || param->sym.mem_type == MT_SDWORD) {
+					AddLineQueueX("mov [%r+%u], %r", T_RSP, 8 + i * 8, GetWin64SubReg(ms64_regs[i], 2));
+					saved++;
+				}
+				else {
+					AddLineQueueX("mov [%r+%u], %r", T_RSP, 8 + i * 8, ms64_regs[i]);
+					saved++;
+				}
 			}
 			param = param->nextparam;
 		}
 		else 
 		{ 
 			AddLineQueueX("mov [%r+%u], %r", T_RSP, 8 + i * 8, ms64_regs[i]);
+			saved++;
 		}
 	}
-	return;
+	return saved;
 }
 
 /* ========================================================================================================= */
@@ -2990,14 +3003,14 @@ static void write_win64_default_prologue_RBP(struct proc_info *info)
 	int                 resstack = ((ModuleInfo.win64_flags & W64F_AUTOSTACKSP) ? sym_ReservedStack->value : 0);
 	int                 stackadj = 0;
 	int                 subAmt = 0;
+	int                 saved = 0;
 
-	DebugMsg1(("write_win64_default_prologue_RBP enter\n"));
 	check_proc_fpo(info);
 	
 	info->pushed_reg = 0;
 
 	if (ModuleInfo.win64_flags & W64F_SAVEREGPARAMS)
-		win64_SaveRegParams_RBP(info);
+		saved = win64_SaveRegParams_RBP(info);
 
 	/*
 	* DB 48h
@@ -3008,12 +3021,12 @@ static void write_win64_default_prologue_RBP(struct proc_info *info)
 	{
 		if (info->fpo)
 		{
-			DebugMsg1(("write_win64_default_prologue_RBP: no frame register needed\n"));
+			/* do nothing */
 		}
 		else if (!info->fpo || info->forceframe)
 		{
-			if (info->isframe && ModuleInfo.frame_auto)
-				AddLineQueueX("db 48h"); //Add this for hot patching
+			if (info->isframe && ModuleInfo.frame_auto && saved == 0)
+				AddLineQueueX("db 48h"); //Add this for hot patching - UASM 2.57, only add rex prefix if first instr.
 			AddLineQueueX("push %r", info->basereg);
 			if (info->isframe && ModuleInfo.frame_auto)
 				AddLineQueueX("%r %r", T_DOT_PUSHREG, info->basereg);
@@ -3198,7 +3211,7 @@ static void write_win64_default_prologue_RBP(struct proc_info *info)
 	{
 		if (info->fpo)
 		{
-			DebugMsg1(("write_win64_default_prologue_RBP: no frame register needed\n"));
+			/* do nothing */
 		}
 		else if (!info->fpo || info->forceframe)
 		{
@@ -3248,7 +3261,6 @@ static void write_win64_default_prologue_RSP(struct proc_info *info)
 		info->xmmsize = 0;
 	}
 
-	DebugMsg1(("write_win64_default_prologue_RSP enter\n"));
 	memset(xyused, 0, 6);
 	info->vecused = 0;
 	XYZMMsize = 16;
@@ -4353,8 +4365,6 @@ static void write_sysv_default_prologue_RBP(struct proc_info *info)
 	int                 stackadj = 0;
 	int                 resstack = ((ModuleInfo.win64_flags & W64F_AUTOSTACKSP) ? sym_ReservedStack->value : 0);
 
-	DebugMsg1(("write_sysv_default_prologue_RBP enter\n"));
-
 	info->pushed_reg = 0;
 
 	//if (info->stackAdj % 16 != 0) stackadj = 8;
@@ -5417,8 +5427,6 @@ ret_code RetInstr(int i, struct asm_tok tokenarray[], int count)
 #endif
 	char        buffer[MAX_LINE_LEN]; /* stores modified RETN/RETF/IRET instruction */
 
-	DebugMsg1(("RetInstr() enter\n"));
-
 #if AMD64_SUPPORT
 	if (tokenarray[i].tokval == T_IRET || tokenarray[i].tokval == T_IRETD || tokenarray[i].tokval == T_IRETQ)
 #else
@@ -5542,8 +5550,6 @@ ret_code RetInstr(int i, struct asm_tok tokenarray[], int count)
 	}
 	AddLineQueue(buffer);
 	RunLineQueue();
-
-	DebugMsg1(("RetInstr() exit\n"));
 
 	return(NOT_ERROR);
 }
