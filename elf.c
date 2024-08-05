@@ -1219,19 +1219,14 @@ static ret_code elf_write_data( struct module_info *modinfo, struct elfmod *em )
 /******************************************************************************/
 {
     struct dsym *curr;
-    //int seg_index;
-    //uint_32 offset = 0;
     uint_32     size;
     int         i;
 
-    DebugMsg(("elf_write_data: enter\n"));
-
     for( curr = SymTables[TAB_SEG].head; curr; curr = curr->next ) {
         size = curr->sym.max_offset - curr->e.seginfo->start_loc;
-        DebugMsg(("elf_write_data(%s): program data at ofs=%X, size=%X\n", curr->sym.name, curr->e.seginfo->fileoffset, size ));
         if ( curr->e.seginfo->segtype != SEGTYPE_BSS && size != 0 ) {
             fseek( CurrFile[OBJ], curr->e.seginfo->fileoffset + curr->e.seginfo->start_loc, SEEK_SET );
-            /**/myassert( curr->e.seginfo->CodeBuffer );
+            /*myassert( curr->e.seginfo->CodeBuffer );*/
             if ( fwrite( curr->e.seginfo->CodeBuffer, 1, size, CurrFile[OBJ] ) != size )
                 WriteError();
         }
@@ -1240,7 +1235,6 @@ static ret_code elf_write_data( struct module_info *modinfo, struct elfmod *em )
     /* write internal sections */
     for ( i = 0; i < NUM_INTSEGS; i++ ) {
         if ( em->internal_segs[i].data ) {
-            DebugMsg(("elf_write_data(%s): internal at ofs=%X, size=%X\n", internal_segparms[i].name, em->internal_segs[i].fileoffset, em->internal_segs[i].size));
             fseek( CurrFile[OBJ], em->internal_segs[i].fileoffset, SEEK_SET );
             if ( fwrite( em->internal_segs[i].data, 1, em->internal_segs[i].size, CurrFile[OBJ] ) != em->internal_segs[i].size )
                 WriteError();
@@ -1250,7 +1244,6 @@ static ret_code elf_write_data( struct module_info *modinfo, struct elfmod *em )
     /* write reloc sections content */
     for( curr = SymTables[TAB_SEG].head; curr; curr = curr->next ) {
         if ( curr->e.seginfo->num_relocs ) {
-            DebugMsg(("elf_write_data(%s): relocs at ofs=%X, size=%X\n", curr->sym.name, curr->e.seginfo->reloc_offset, curr->e.seginfo->num_relocs * sizeof(Elf32_Rel)));
             fseek( CurrFile[OBJ], curr->e.seginfo->reloc_offset, SEEK_SET );
 #if AMD64_SUPPORT
             if ( modinfo->defOfssize == USE64 )
@@ -1265,8 +1258,6 @@ static ret_code elf_write_data( struct module_info *modinfo, struct elfmod *em )
         EmitWarn( 2, ELF_GNU_EXTENSIONS_USED );
     }
 #endif
-
-    DebugMsg(("elf_write_data: exit\n"));
 
     return( NOT_ERROR );
 }
