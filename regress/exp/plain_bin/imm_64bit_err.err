@@ -1,0 +1,15 @@
+..\src\plain_bin\imm_64bit_err.asm(6) : Error A2237: Constant value too large: FFFFFFFF11111111h
+..\src\plain_bin\imm_64bit_err.asm(14) : Error A2237: Constant value too large: 99999999h
+..\src\plain_bin\imm_64bit_err.asm(15) : Error A2237: Constant value too large: 99999999h
+..\src\plain_bin\imm_64bit_err.asm(16) : Error A2237: Constant value too large: 99999999h
+..\src\plain_bin\imm_64bit_err.asm(18) : Error A2237: Constant value too large: FFFFFFFF11111111h
+..\src\plain_bin\imm_64bit_err.asm(19) : Error A2237: Constant value too large: FFFFFFFF11111111h
+..\src\plain_bin\imm_64bit_err.asm(20) : Error A2237: Constant value too large: FFFFFFFF11111111h
+..\src\plain_bin\imm_64bit_err.asm(23) : Error A2237: Constant value too large: 8000000000000007h
+..\src\plain_bin\imm_64bit_err.asm(24) : Error A2237: Constant value too large: FFFFFFFF0h
+..\src\plain_bin\imm_64bit_err.asm(25) : Error A2237: Constant value too large: 8000000000000000h
+..\src\plain_bin\imm_64bit_err.asm(27) : Error A2237: Constant value too large: 8000000000000000h
+..\src\plain_bin\imm_64bit_err.asm(28) : Error A2237: Constant value too large: 800000000000000h
+..\src\plain_bin\imm_64bit_err.asm(29) : Error A2237: Constant value too large: 8000000000000000h
+..\src\plain_bin\imm_64bit_err.asm(30) : Error A2275: Constant value too large: 80000000000000000h
+..\src\plain_bin\imm_64bit_err.asm(31) : Error A2275: Constant value too large: 80000000000000000h
