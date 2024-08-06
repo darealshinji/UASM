@@ -953,8 +953,8 @@ ret_code segm_override( const struct expr *opndx, struct code_info *CodeInfo )
 
 /* UASM 2.56 - improved check if an immediate fits in 32bits */
 static char fits32(int_64 val) {
-    uint64_t top = ((uint64_t)val) >> 32;
-    if (top == 0 || top == 0x00000000ffffffff)
+    uint64_t top = ((uint64_t)val) >> 31;
+    if (top == 0) // || top == 0x00000000ffffffff)
         return TRUE;
     return FALSE;
 }
