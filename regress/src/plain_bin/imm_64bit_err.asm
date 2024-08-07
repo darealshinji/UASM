@@ -6,10 +6,10 @@ start:
 or  rax, 0FFFFFFFF11111111h   ;ok => Error A2237: Constant value too large
 and rax, -5                   ;ok => valid
 and eax, -1                   ;ok => valid
-mov eax, 0xFFFFFFFF           ;ok => valid
+mov eax, 0xFFFFFFFF           ;ok => Error A2237: Constant value too large
 
 or  rax, 0x7fffffff           ;ok => valid
-or  rax, 0x80000000           ;ok => valid (Defuse won't assemble this - but it should!)
+or  rax, 0x80000000           ;ok => Error A2237: Constant value too large
 
 or  rax, 99999999h            ;ok => Error A2237: Constant value too large
 cmp rax, 99999999h            ;ok => Error A2237: Constant value too large

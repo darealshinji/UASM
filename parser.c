@@ -955,7 +955,7 @@ ret_code segm_override( const struct expr *opndx, struct code_info *CodeInfo )
 static char fits32(int_64 val) {
     uint64_t top = ((uint64_t)val) >> 32;
     uint64_t top2 = ((uint64_t)val) >> 31;
-    if ((top == 0 || top2 == 0x00000001ffffffff) && val <= 0x80000000)
+    if ((top == 0 || top2 == 0x00000001ffffffff) && val < 0x80000000)
         return TRUE;
     return FALSE;
 }
