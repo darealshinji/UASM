@@ -1137,9 +1137,22 @@ static ret_code get_operand( struct expr *opnd, int *idx, struct asm_tok tokenar
                     //if ( opnd->type == NULL && !( flags & EXPF_NOLCREATE ) ) { /* added v1.95 */
                     if ( opnd->type == NULL ) {
                         sym = SymLookup( tmp );
-                        sym->state = SYM_UNDEFINED;
-                        sym_add_table( &SymTables[TAB_UNDEF], (struct dsym *)sym ); /* add UNDEFINED */
-                        DebugMsg1(("get_operand(%s): symbol not (yet) defined, CurrProc=%s\n", tmp, CurrProc ? CurrProc->sym.name : "NULL" ));
+                        /* v2.18: don't insert an already defined symbol to the "undefined" list;
+                                                 * "undefined" symbols, procs and stack variables all use the same field to link to
+                                                 * their "successor".
+                                                 */
+                        if (sym->state == SYM_UNDEFINED) {
+                            sym_add_table(&SymTables[TAB_UNDEF], (struct dsym*)sym); /* add UNDEFINED */
+                            DebugMsg1(("get_operand(%s): symbol not (yet) defined, CurrProc=%s\n", tmp, CurrProc ? CurrProc->sym.name : "NULL"));
+                        }
+                        else if (opnd->is_dot) {
+                            DebugMsg1(("get_operand(%s): member of an unknown struct var: %s\n", tmp));
+                            if (!nullmbr) nullmbr = SymAlloc("");
+                            sym = nullmbr;
+                        }
+                        else {
+                            return(fnEmitErr(SYMBOL_ALREADY_DEFINED, tmp)); /* can this happen at all? */
+                        }
                     
                     // } else if ( opnd->type == NULL || opnd->type != nullstruct ) { /* v2.08: if changed */
                     // } else if ( opnd->type == NULL || opnd->type->typekind != TYPE_NONE ) { /* v2.11: if changed */
