@@ -212,9 +212,9 @@ insn(STOSD, 1,                  OpCls( M32,      NONE,       NONE ), F_32,   0, 
 
 insx(AAA, aaa,                  OpCls( NONE,     NONE,       NONE ), 0,      0,  no_RM,  0x37,     0x00,       P_86,        0, RWF_IA32 )
 insx(AAD, aad,                  OpCls( NONE,     NONE,       NONE ), 0,      0,  0,      0xD5,     0x0A,       P_86,        0, RWF_IA32 )
-insn(AAD, aad,                  OpCls( I8,       NONE,       NONE ), 0,      1,  no_RM,  0xD5,     0x00,       P_86,        0, RWF_IA32 ) /*UASM 2.57*/
+insn(AAD, 1,                    OpCls( I8,       NONE,       NONE ), 0,      1,  no_RM,  0xD5,     0x00,       P_86,        RWF_IA32 ) /*UASM 2.57*/
 insx(AAM, aam,                  OpCls( NONE,     NONE,       NONE ), 0,      0,  0,      0xD4,     0x0A,       P_86,        0, RWF_IA32 )
-insn(AAM, aam,                  OpCls( I8,       NONE,       NONE ), 0,      1,  no_RM,  0xD4,     0x00,       P_86,        0, RWF_IA32 ) /*UASM 2.57*/
+insn(AAM, 1,                    OpCls( I8,       NONE,       NONE ), 0,      1,  no_RM,  0xD4,     0x00,       P_86,        RWF_IA32 ) /*UASM 2.57*/
 insx(AAS, aas,                  OpCls( NONE,     NONE,       NONE ), 0,      0,  no_RM,  0x3F,     0x00,       P_86,        0, RWF_IA32 )
 insx(DAA, daa,                  OpCls( NONE,     NONE,       NONE ), 0,      0,  no_RM,  0x27,     0x00,       P_86,        0, RWF_IA32 )
 insx(DAS, das,                  OpCls( NONE,     NONE,       NONE ), 0,      0,  no_RM,  0x2F,     0x00,       P_86,        0, RWF_IA32 )
