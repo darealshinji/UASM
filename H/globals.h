@@ -922,6 +922,10 @@ extern uint_8                MacroLevel;    /* macro nesting level */
 extern bool                  write_to_file; /* 1=write the object module */
 extern bool                  gmaskflag;
 
+#if defined(__UNIX__)
+extern char *strupr(char *);
+#endif
+
 /* functions in assemble.c */
 
 struct fixup;

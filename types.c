@@ -24,6 +24,8 @@
 #include "fastpass.h"
 #include "myassert.h"
 
+extern void SymSimd(struct dsym *);
+
 /* v2.04: changed to 0 */
 //#define ANYNAME 1 /* fixme: this probably should be changed to 0 */
 #define ANYNAME 0

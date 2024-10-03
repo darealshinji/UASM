@@ -123,7 +123,7 @@ static const struct print_item cr[] = {
 
 struct lstleft {
     struct lstleft *next;
-    char buffer[4*8];
+    char buffer[4*8 + 1];
     char last;
 };
 

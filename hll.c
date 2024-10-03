@@ -2095,9 +2095,9 @@ ret_code HllEndDir(int i, struct asm_tok tokenarray[])
                             dcnt = 0;                          /* reset data caunter */
                         }
                         if (dcnt)
-                            sprintf(unum, ",%d", hll->pcases64[j]);
+                            sprintf(unum, ",%lu", hll->pcases64[j]);
                         else
-                            sprintf(unum, "%d", hll->pcases64[j]);
+                            sprintf(unum, "%lu", hll->pcases64[j]);
                         strcat(buffer, unum);
                         dcnt++;
                         j++;

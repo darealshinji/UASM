@@ -582,7 +582,7 @@ static void ExpandObjCalls(char *line, struct asm_tok tokenarray[])
 		/* Transfer new source line back for token rescan */
 		if (didExpand)
 		{
-			strcpy(line, &newline);
+			strcpy(line, newline);
 			Token_Count = Tokenize(line, 0, tokenarray, TOK_RESCAN);
 		}
 	}
@@ -777,7 +777,7 @@ static void ExpandHllCalls(char *line, struct asm_tok tokenarray[], bool inParam
 	int clIdx, opIdx;
 	int tokenCount;
 	struct asm_tok *tokenarray2;
-	char *p = &newline;
+	char *p = newline;
 	char idxStack[] = { 0, 0, 0, 0 };
 	int stackPt = -1;
 	char idxline[MAX_LINE_LEN];
@@ -786,7 +786,7 @@ static void ExpandHllCalls(char *line, struct asm_tok tokenarray[], bool inParam
 	bool expandedCall = FALSE;
 	char uCnt = 0;
 
-	strcpy(&newline, line);
+	strcpy(newline, line);
 	memset(&idxline, 0, MAX_LINE_LEN);
 
 	for (i = 0;i < Token_Count;i++)
@@ -964,7 +964,7 @@ static void ExpandHllCalls(char *line, struct asm_tok tokenarray[], bool inParam
 				}
 
 				/* Reset string pointer*/
-				p = &newline;			
+				p = newline;
 			}
 		}
 	}
@@ -979,7 +979,7 @@ static void ExpandHllCalls(char *line, struct asm_tok tokenarray[], bool inParam
 	//finally replace place-holder with idxline value
 	if (expandedCall)
 	{
-		p = &newline;
+		p = newline;
 		p = strstr(p, "invoke"); // even if the line only contains uinvoke, such as in an HLL expression this will still find it.
 		if (p != NULL)
 		{
@@ -999,7 +999,7 @@ static void ExpandHllCalls(char *line, struct asm_tok tokenarray[], bool inParam
 				p++;
 			}
 		}
-		p = &newline;
+		p = newline;
 		p = strstr(p, "arginvoke(");
 		j = (int)(p - (char *)&newline);
 		while (p)
@@ -1015,11 +1015,11 @@ static void ExpandHllCalls(char *line, struct asm_tok tokenarray[], bool inParam
 		}
 
 		/* Ensure max nesting depth isn't exceeded */
-		VerifyNesting(&newline, hasExprBracket);
+		VerifyNesting(newline, hasExprBracket);
 	}
 
 	/* Transfer new source line back for token rescan */
-	strcpy(line, &newline);
+	strcpy(line, newline);
 }
 
 static bool PossibleCallExpansion(struct asm_tok tokenarray[])
@@ -1128,23 +1128,23 @@ int PreprocessLine( char *line, struct asm_tok tokenarray[] )
 		// Hll and Object style call expansion is only valid inside a code section, AND if the line contains ( ) or ->.
 		if (CurrSeg && (strcmp(CurrSeg->sym.name, "_TEXT") == 0 || strcmp(CurrSeg->sym.name, "_flat") == 0) && PossibleCallExpansion( tokenarray ))
 		{
-			strcpy(&cline, line);
-			ExpandStaticObjCalls(&cline, tokenarray);
-			if (strcmp(&cline, line) != 0)
+			strcpy(cline, line);
+			ExpandStaticObjCalls(cline, tokenarray);
+			if (strcmp(cline, line) != 0)
 			{
-				strcpy(line, &cline);
+				strcpy(line, cline);
 				Token_Count = Tokenize(line, 0, tokenarray, TOK_RESCAN);
 			}
-			ExpandObjCalls(&cline, tokenarray);
-			if (strcmp(&cline, line) != 0)
+			ExpandObjCalls(cline, tokenarray);
+			if (strcmp(cline, line) != 0)
 			{
-				strcpy(line, &cline);
+				strcpy(line, cline);
 				Token_Count = Tokenize(line, 0, tokenarray, TOK_RESCAN);
 			}
-			ExpandHllCalls(&cline, tokenarray, FALSE, 0, FALSE);
-			if (strcmp(&cline, line) != 0)
+			ExpandHllCalls(cline, tokenarray, FALSE, 0, FALSE);
+			if (strcmp(cline, line) != 0)
 			{
-				strcpy(line, &cline);
+				strcpy(line, cline);
 				Token_Count = Tokenize(line, 0, tokenarray, TOK_RESCAN);
 			}
 		}

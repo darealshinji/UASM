@@ -1798,7 +1798,7 @@ int EXPQUAL AssembleModule( const char *source )
 						printf("%u errors\n", ModuleInfo.g.error_count);
 						SetConsoleTextAttribute(hConsole, screenBufferInfo.wAttributes);
 			#else
-						printf(FWHT("%s: %lu lines, "), GetFNamePart(GetFName(ModuleInfo.srcfile)->fname), GetLineNumber());
+						printf(FWHT("%s: %u lines, "), GetFNamePart(GetFName(ModuleInfo.srcfile)->fname), GetLineNumber());
 						printf(FGRN("%u passes"), Parse_Pass + 1);
 						printf(", ");
 						printf(FCYN("%u ms"), endtime - starttime);
