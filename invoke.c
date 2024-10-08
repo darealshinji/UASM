@@ -3239,7 +3239,8 @@ static int PushInvokeParam(int i, struct asm_tok tokenarray[], struct dsym *proc
 	struct dsym *currs;
 	size_t slen;
 	char *pSrc;
-	char *pDest;
+	uint_16 *pDest;
+	uint_8 *pDest2;
 	char *labelstr = "__ls";
 	char buf[32];
 	char c1;
@@ -3287,7 +3288,7 @@ static int PushInvokeParam(int i, struct asm_tok tokenarray[], struct dsym *proc
 
 				lbl = SymLookup(buf);
 				SetSymSegOfs(lbl);
-				memset(&buff, 0, 256);
+				memset(&buff, 0, 256*sizeof(uint_16));
 				pDest = buff;
 				finallen = slen;
 
@@ -3362,7 +3363,7 @@ static int PushInvokeParam(int i, struct asm_tok tokenarray[], struct dsym *proc
 				lbl = SymLookup(buf);
 				memset(&buff, 0, 256);
 
-				pDest = buff2;
+				pDest2 = buff2;
 				finallen = slen;
 
 				while (*pSrc != '"')
@@ -3371,28 +3372,28 @@ static int PushInvokeParam(int i, struct asm_tok tokenarray[], struct dsym *proc
 					c2 = *(pSrc);
 					if (c1 == '\\' && c2 == 'n')
 					{
-						*pDest++ = 10;
+						*pDest2++ = 10;
 						finallen--;
 						pSrc++;
 					}
 					else if (c1 == '\\' && c2 == 'r')
 					{
-						*pDest++ = 13;
+						*pDest2++ = 13;
 						finallen--;
 						pSrc++;
 					}
 					else if (c1 == '\\' && c2 == 't')
 					{
-						*pDest++ = 9;
+						*pDest2++ = 9;
 						finallen--;
 						pSrc++;
 					}
 					else
-						*pDest++ = c1;
+						*pDest2++ = c1;
 				}
-				*pDest++ = 0;
+				*pDest2++ = 0;
 
-				j = UTF8toWideChar(&buff2, slen, NULL, (unsigned short *)&buff, slen);
+				j = UTF8toWideChar(buff2, slen, NULL, buff, slen);
 				/* j contains a proper number of wide chars, it can be different than slen, v2.38 */
 				SetSymSegOfs(lbl);
 				OutputBytes((unsigned char *)&buff, (j * 2) + 2, NULL);
