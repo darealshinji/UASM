@@ -3361,7 +3361,7 @@ static int PushInvokeParam(int i, struct asm_tok tokenarray[], struct dsym *proc
 				pSrc = (tokenarray[i + 1].string_ptr) + 1;
 				sprintf(buf, "%s%d", labelstr, hashpjw(pSrc));
 				lbl = SymLookup(buf);
-				memset(&buff, 0, 256);
+				memset(&buff, 0, 256*sizeof(uint_16));
 
 				pDest2 = buff2;
 				finallen = slen;
