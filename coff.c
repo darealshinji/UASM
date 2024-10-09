@@ -209,8 +209,8 @@ static ret_code coff_write_section_table( struct module_info *modinfo, struct co
                     continue;
                 }
                 /* UASM 2.56 For RIP relative addresses in the same section, we don't want a COFF fixup */
-                else if (fix->sym && curr->e.seginfo->Ofssize == USE64 && curr == fix->sym->segment && fix->type == FIX_RELOFF32 
-                    && fix->sym->isdefined && !fix->sym->isfar && fix->sym->state != SYM_EXTERNAL) {
+                else if (fix->sym && curr->e.seginfo->Ofssize == USE64 && curr == (struct dsym *)(fix->sym->segment)
+                    && fix->type == FIX_RELOFF32 && fix->sym->isdefined && !fix->sym->isfar && fix->sym->state != SYM_EXTERNAL) {
                     uint_32* cp = (uint_32*)(curr->e.seginfo->CodeBuffer + (fix->locofs - curr->e.seginfo->start_loc));
                     uint_32 src = fix->sym->offset - (fix->locofs + fix->addbytes);
                     (*cp) += src;
@@ -892,8 +892,8 @@ static void coff_write_fixups( struct dsym *section, uint_32 *poffset, uint_32 *
         }
 
         /* UASM 2.56 For RIP relative addresses in the same section, we don't want a COFF fixup */
-        if (fix->sym && section->e.seginfo->Ofssize == USE64 && section == fix->sym->segment && fix->type == FIX_RELOFF32 
-            && fix->sym->isdefined && !fix->sym->isfar && fix->sym->state != SYM_EXTERNAL) {
+        if (fix->sym && section->e.seginfo->Ofssize == USE64 && section == (struct dsym *)(fix->sym->segment)
+            && fix->type == FIX_RELOFF32 && fix->sym->isdefined && !fix->sym->isfar && fix->sym->state != SYM_EXTERNAL) {
         }
         else {
             coff_write_fixup(fix->locofs, fix->sym->ext_idx, type);

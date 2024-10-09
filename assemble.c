@@ -1039,7 +1039,7 @@ static void PassOneChecks( void )
          */
 #if FASTPASS
         /* UASM 2.55 , altname is set to 1 when the type is undefined */
-        if ( curr->sym.altname > 1 ) 
+        if ( curr->sym.altname_val > 1 )
 		{
             if ( curr->sym.altname->state == SYM_INTERNAL ) 
 			{
