@@ -3428,7 +3428,7 @@ static void write_win64_default_prologue_RSP(struct proc_info *info)
 			if (CurrProc->sym.langtype == LANG_VECTORCALL) {
 				vectstart = info->localsize + info->xmmsize & ~(16 - 1);
 				if (info->vecused) {
-					if (info->vecregs) {
+					//if (info->vecregs) {  // address of array 'info->vecregs' will always evaluate to 'true'
 						for (n = 0, m = 0, xsize = 0; n < 6; n++) {
 							xreg = info->vecregs[n];
 							if (xreg == 1 && info->vecregsize[n] < 16)
@@ -3559,7 +3559,7 @@ static void write_win64_default_prologue_RSP(struct proc_info *info)
 								}
 							}
 						}
-					}
+					//}
 				}
 			}
 		}

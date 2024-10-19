@@ -29,7 +29,6 @@ else
 CC = clang
 extra_c_flags += -Wno-incompatible-pointer-types-discards-qualifiers
 extra_c_flags += -Wno-pointer-sign -Wno-switch -Wno-enum-conversion -Wno-enum-compare -Wno-comment
-extra_c_flags += -Wno-unsequenced -Wno-pointer-bool-conversion -Wno-deprecated-non-prototype
 endif
 
 c_flags =-D __UNIX__ $(extra_c_flags)
