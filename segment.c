@@ -1168,7 +1168,7 @@ void SegmentInit( int pass )
 {
     struct dsym *curr;
     uint_32     i;
-    char        *p;
+    uint_8      *p;
     CurrSeg      = NULL;
     stkindex     = 0;
 

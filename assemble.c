@@ -408,7 +408,7 @@ void OutputBytes( const unsigned char *pbytes, int len, struct fixup *fixup )
 void OutputInterleavedBytes(const unsigned char *pbytes, int len, struct fixup *fixup)
 {
 	int i = 0;
-	char *pOut = NULL;
+	unsigned char *pOut = NULL;
 
 	if (write_to_file == TRUE) {
 		uint_32 idx = CurrSeg->e.seginfo->current_loc - CurrSeg->e.seginfo->start_loc;

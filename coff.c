@@ -343,7 +343,7 @@ static void coff_write_symbol(char* name, int_32 strpos, int_32 value,
     IMAGE_SYMBOL sym;
 
     if (name) {
-        strncpy(sym.N.ShortName, name, IMAGE_SIZEOF_SHORT_NAME);
+        strncpy((char *)sym.N.ShortName, name, IMAGE_SIZEOF_SHORT_NAME);
     }
     else {
         sym.N.LongName[0] = 0;
@@ -1072,7 +1072,7 @@ static void coff_create_drectve( struct module_info *modinfo, struct coffmod *cm
             struct dsym *tmp;
             int size = 0;
             struct qitem *q;
-            uint_8 *p;
+            char *p;
             cm->directives->e.seginfo->info = TRUE;
 
             /* calc the size for this segment */
@@ -1116,7 +1116,7 @@ static void coff_create_drectve( struct module_info *modinfo, struct coffmod *cm
 
             cm->directives->sym.max_offset = size;
             cm->directives->e.seginfo->CodeBuffer = LclAlloc( size + 1 );
-            p = cm->directives->e.seginfo->CodeBuffer;
+            p = (char *)cm->directives->e.seginfo->CodeBuffer;
 
             /* copy the data */
 
@@ -1125,22 +1125,22 @@ static void coff_create_drectve( struct module_info *modinfo, struct coffmod *cm
                 if( tmp->e.procinfo->isexport ) {
                     Mangle( &tmp->sym, buffer );
                     if ( Options.no_export_decoration == FALSE )
-                        p += sprintf( (char *)p, "-export:%s ", buffer );
+                        p += sprintf( p, "-export:%s ", buffer );
                     else
-                        p += sprintf( (char *)p, "-export:%s=%s ", tmp->sym.name, buffer );
+                        p += sprintf( p, "-export:%s=%s ", tmp->sym.name, buffer );
                 }
             }
             /* 2. libraries */
             for( q = modinfo->g.LibQueue.head; q ; q = q->next ) {
                 if ( *q->value != '"' && strchr( q->value, ' ' ) )
-                    p += sprintf( (char *)p,"-defaultlib:\"%s\" ", (char *)q->value );
+                    p += sprintf( p,"-defaultlib:\"%s\" ", (char *)q->value );
                 else
-                    p += sprintf( (char *)p,"-defaultlib:%s ", (char *)q->value );
+                    p += sprintf( p,"-defaultlib:%s ", (char *)q->value );
             }
             /* 3. entry */
             if ( modinfo->g.start_label ) {
                 GetStartLabel( buffer, FALSE );
-                p += sprintf( (char *)p, "-entry:%s ", buffer );
+                p += sprintf( p, "-entry:%s ", buffer );
             }
             /* 4. impdefs */
             for( tmp = imp; tmp ; tmp = tmp->next ) {
@@ -1160,7 +1160,7 @@ static void coff_create_drectve( struct module_info *modinfo, struct coffmod *cm
             }
             /* 5. pragma comment(linker,"/..") */
             for (q = modinfo->g.LinkQueue.head; q; q = q->next) {
-                p += sprintf((char*)p, "%s ", (char*)q->value);
+                p += sprintf(p, "%s ", (char*)q->value);
             }
          }
     }
@@ -1196,7 +1196,7 @@ static ret_code coff_write_module( struct module_info *modinfo )
                 break;
             cm.SymDeb[i].seg->e.seginfo->characteristics = (IMAGE_SCN_MEM_READ | IMAGE_SCN_MEM_DISCARDABLE) >> 24;
             /* use the source line buffer as code buffer. It isn't needed anymore */
-            cm.SymDeb[i].seg->e.seginfo->CodeBuffer = CurrSource + i * SIZE_CV_SEGBUF;
+            cm.SymDeb[i].seg->e.seginfo->CodeBuffer = (uint_8 *)(CurrSource + i * SIZE_CV_SEGBUF);
             cm.SymDeb[i].seg->e.seginfo->flushfunc = coff_flushfunc;
             cm.SymDeb[i].q.head = NULL;
         }

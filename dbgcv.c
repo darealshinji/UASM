@@ -123,7 +123,7 @@ struct leaf32 {
 
 #pragma pack(pop)
 
-uint_8* SetPrefixName(uint_8* p, uint_8* name, int len)
+uint_8* SetPrefixName(uint_8* p, char* name, int len)
 {
 	if (Options.debug_symbols < CV_SIGNATURE_C13)
 		*p++ = len;
@@ -1607,7 +1607,7 @@ void cv_write_debug_tables(struct dsym* symbols, struct dsym* types, void* pv)
 		EnvBlock = cv.s_env;
 		EnvBlock->flags = 0;
 		EnvBlock->rectyp = S_ENVBLOCK;
-		s = EnvBlock->rgsz;
+		s = (char *)EnvBlock->rgsz;
 
 		/* pairs of 0-terminated strings - keys/values
 		 *
@@ -1623,15 +1623,15 @@ void cv_write_debug_tables(struct dsym* symbols, struct dsym* types, void* pv)
 		len = strlen(_pgmptr) + 1;
 		s = strcpy(s, _pgmptr) + len;
 		s = strcpy(s, "src") + 4;
-		p = cv.files[0].name;
-		if (_memicmp(p, cv.currdir, q) == 0)
+		p = (uint_8 *)cv.files[0].name;
+		if (_memicmp((const char *)p, cv.currdir, q) == 0)
 			p += q + 1;
 
-		len = strlen(p) + 1;
-		s = strcpy(s, p) + len;
+		len = strlen((const char *)p) + 1;
+		s = strcpy(s, (const char *)p) + len;
 		*s++ = '\0';
 		EnvBlock->reclen = (unsigned short)(s - (char*)cv.ps - 2);
-		cv.ps = s;
+		cv.ps = (uint_8 *)s;
 
 		/* length needs to be added for each symbol */
 

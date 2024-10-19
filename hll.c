@@ -352,11 +352,11 @@ static void bubblesort(struct hll_item* hll, uint_16* lbl, int* src, int n) {
     hll->delta = hll->maxcase - hll->mincase;
 }
 #if AMD64_SUPPORT 
-static void bubblesort64(struct hll_item* hll, uint_16* lbl, int_64* src, int n) {
+static void bubblesort64(struct hll_item* hll, uint_16* lbl, uint_64* src, int n) {
     /*******************************************************************************************************************************/
     int i;
     int j;
-    int_64 temp1;
+    uint_64 temp1;
     uint_16 temp2;
     for (i = 0; i < n; ++i)
     {
@@ -2869,7 +2869,7 @@ ret_code HllExitDir(int i, struct asm_tok tokenarray[])
     char* p;
     char buffer[MAX_LINE_LEN];
 #if AMD64_SUPPORT
-    int_64* newcp64;
+    uint_64* newcp64;
 #endif
 
 
