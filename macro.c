@@ -209,7 +209,8 @@ static int store_placeholders( char *line, struct mname_list *mnames )
             substprf = ( ( start > line && *(start-1) == '&') || *p == '&' );
             if ( quote == NULLC || substprf ) {
                 /* look for this word in the macro parms, and replace it if it is */
-                if ( start = replace_parm( line, start, p - start, mnames ) ) {
+                start = replace_parm( line, start, p - start, mnames );
+                if ( start ) {
                     params++;
                     p = start;
                 }
@@ -939,7 +940,7 @@ struct dsym *CreateMacro( const char *name )
 /******************************************/
 {
     struct dsym *macro;
-    if ( macro = (struct dsym *)SymCreate( name ) ) {
+    if ( (macro = (struct dsym *)SymCreate( name )) != NULL ) {
         macro->sym.state = SYM_MACRO;
         macro->e.macroinfo = LclAlloc( sizeof( struct macro_info ) );
         macro->e.macroinfo->parmcnt  = 0;
@@ -1150,10 +1151,12 @@ ret_code DefineDirective( int i, struct asm_tok tokenarray[] )
     strcat(p, " EQU 1\0");
     strcpy(tokenarray[0].tokpos,buff);
     Token_Count = Tokenize(tokenarray[0].tokpos, 0, tokenarray, 0);
-  if ( sym = CreateConstant( tokenarray ) ) {
+  if ( (sym = CreateConstant( tokenarray )) != NULL ) {
       if ( sym->state != SYM_TMACRO ) {
 #if FASTPASS
-          if ( StoreState ) FStoreLine( 0 );
+          if ( StoreState ) {
+            FStoreLine( 0 ) {}
+          }
 #endif
           if ( Options.preprocessor_stdout == TRUE )
               WritePreprocessedLine( CurrSource );

@@ -736,7 +736,7 @@ ret_code LocalDir(int i, struct asm_tok tokenarray[])
 			curr->nextlocal = local;
 		}
 
-		if (tokenarray[i].token != T_FINAL)
+		if (tokenarray[i].token != T_FINAL) {
 			if (tokenarray[i].token == T_COMMA) {
 				if ((i + 1) < Token_Count)
 					i++;
@@ -744,6 +744,7 @@ ret_code LocalDir(int i, struct asm_tok tokenarray[])
 			else {
 				return(EmitErr(EXPECTING_COMMA, tokenarray[i].tokpos));
 			}
+		}
 
 	} while (i < Token_Count);
 
@@ -1234,7 +1235,8 @@ static ret_code ParseParams(struct dsym *proc, int i, struct asm_tok tokenarray[
 #endif
 			for (; cntParam; cntParam--)
 			{
-				for (curr = 1, paranode = proc->e.procinfo->paralist; curr < cntParam; paranode = paranode->nextparam, curr++);
+				for (curr = 1, paranode = proc->e.procinfo->paralist; curr < cntParam; paranode = paranode->nextparam, curr++)
+				{}
 				DebugMsg1(("ParseParams: parm=%s, ofs=%u, size=%d\n", paranode->sym.name, offset, paranode->sym.total_size));
 				if (paranode->sym.state == SYM_TMACRO) /* register param? */
 					;
@@ -4869,6 +4871,8 @@ static ret_code write_generic_prologue(struct proc_info *info)
 			AddLineQueueX("push %r", *regist);
 		}
 	}
+
+	return(NOT_ERROR);
 }
 
 /* Write out UASM internal prologue */
@@ -4908,11 +4912,12 @@ static ret_code write_default_prologue(void)
 runqueue:
 
 	/* special case: generated code runs BEFORE the line.*/
-	if (ModuleInfo.list && UseSavedState)
+	if (ModuleInfo.list && UseSavedState) {
 		if (Parse_Pass == PASS_1)
 			info->prolog_list_pos = list_pos;
 		else
 			list_pos = info->prolog_list_pos;
+	}
 
 	/* line number debug info also needs special treatment
 	* because current line number is the first true src line

@@ -1204,10 +1204,12 @@ int PreprocessLine( char *line, struct asm_tok tokenarray[] )
              * handle it in ANY case and if it defines a number, the line
              * must be stored and, if -EP is set, written to stdout.
              */
-            if ( sym = CreateConstant( tokenarray ) ) {
+            if ( (sym = CreateConstant( tokenarray )) != NULL ) {
                 if ( sym->state != SYM_TMACRO ) {
 #if FASTPASS
-                    if ( StoreState ) FStoreLine( 0 );
+                    if ( StoreState ) {
+                        FStoreLine( 0 ) {}
+                    }
 #endif
                     if ( Options.preprocessor_stdout == TRUE )
                         WritePreprocessedLine( line );

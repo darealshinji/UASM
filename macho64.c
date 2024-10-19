@@ -197,7 +197,7 @@ int macho_build_string_tbl(struct symtab_command *pSymCmd, struct macho_module *
 	int totalSymCount = 0;
 
 	/* Normal local symbols */
-	while (sym = SymEnum(sym, &i))
+	while ( (sym = SymEnum(sym, &i)) != NULL )
 	{
 		if (strcmp(sym->name, "$xdatasym") == 0) continue;
 		if (sym->state != SYM_MACRO && sym->state != SYM_SEG && sym->state != SYM_TMACRO && sym->predefined == 0 && sym->state != SYM_GRP && sym->isequate == 0)
@@ -218,7 +218,7 @@ int macho_build_string_tbl(struct symtab_command *pSymCmd, struct macho_module *
 	mm->extSymIdx = totalSymCount;
 
 	/* External public symbols */
-	while (sym = SymEnum(sym, &i))
+	while ( (sym = SymEnum(sym, &i)) != NULL )
 	{
 		if (sym->state != SYM_MACRO && sym->state != SYM_SEG && sym->state != SYM_TMACRO && sym->predefined == 0 && sym->state != SYM_GRP && sym->isequate == 0)
 		{
@@ -238,7 +238,7 @@ int macho_build_string_tbl(struct symtab_command *pSymCmd, struct macho_module *
 	mm->undefSymIdx = totalSymCount;
 
 	/* Undefined symbols */
-	while (sym = SymEnum(sym, &i))
+	while ( (sym = SymEnum(sym, &i)) != NULL )
 	{
 		if (sym->state != SYM_MACRO && sym->state != SYM_SEG && sym->state != SYM_TMACRO && sym->predefined == 0 && sym->state != SYM_GRP && sym->isequate == 0)
 		{

@@ -260,7 +260,7 @@ ret_code IncBinDirective( int i, struct asm_tok tokenarray[] )
     DebugMsg1(("IncBinDirective: filename=%s, offset=%" I32_SPEC "u, size=%" I32_SPEC "u\n", StringBufferEnd, fileoffset, sizemax ));
 
     /* try to open the file */
-    if ( file = SearchFile( StringBufferEnd, FALSE ) ) 
+    if ( (file = SearchFile( StringBufferEnd, FALSE )) != NULL ) 
 	{
 		/* v2.14 : Get File Size */
 		fseek( file, 0L, SEEK_END );

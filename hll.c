@@ -913,7 +913,7 @@ static void ReplaceLabel(char* p, uint_32 olabel, uint_32 nlabel)
     i = (int)strlen(newlbl);
 
     DebugMsg1(("%u ReplaceLabel(%s->%s, >%s<)\n", evallvl, oldlbl, newlbl, p));
-    while (p = strstr(p, oldlbl)) {
+    while ( (p = strstr(p, oldlbl)) != NULL ) {
         memcpy(p, newlbl, i);
         p += i;
     }
@@ -1090,7 +1090,7 @@ static ret_code QueueTestLines(char* src)
     while (src) {
         //if (*src == ' ') src++; /* v2.11: obsolete */
         start = src;
-        if (src = strchr(src, EOLCHAR))
+        if ( (src = strchr(src, EOLCHAR)) != NULL )
             *src++ = NULLC;
         if (*start)
             AddLineQueue(start);

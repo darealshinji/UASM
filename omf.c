@@ -1532,7 +1532,8 @@ static void omf_write_header_dbgcv( void )
     AttachData( &obj, "\001CV", 3 );
     omf_write_record( &obj );
     for ( i = 0; i < DBGS_MAX; i++ ) {
-        if ( SymDebSeg[i] = (struct dsym *)CreateIntSegment( SymDebParm[i].name, SymDebParm[i].cname, 0, USE32, TRUE ) ) {
+        SymDebSeg[i] = (struct dsym *)CreateIntSegment( SymDebParm[i].name, SymDebParm[i].cname, 0, USE32, TRUE );
+        if ( SymDebSeg[i] ) {
             SymDebSeg[i]->e.seginfo->force32 = TRUE; /* without this a 32-bit segdef is emitted only if segsize > 64kB */
             SymDebSeg[i]->e.seginfo->flushfunc = omf_cv_flushfunc;
         }
@@ -1564,6 +1565,10 @@ static ret_code omf_write_module( struct module_info *modinfo )
 #if TRUNCATE
     int fh;
     uint_32 size;
+#if defined(__UNIX__) || defined(__CYGWIN__) || defined(__DJGPP__)
+    int ret;
+#define HAVE_FTRUNCATE 1
+#endif
 #endif
     /* -if Zi is set, write symbols and types */
     if ( Options.debug_symbols )
@@ -1585,9 +1590,10 @@ static ret_code omf_write_module( struct module_info *modinfo )
      * won't become shorter anymore.
      */
     size = ftell( CurrFile[OBJ] );
-#if defined(__UNIX__) || defined(__CYGWIN__) || defined(__DJGPP__)
+#if defined(HAVE_FTRUNCATE)
     fh = fileno( CurrFile[OBJ] );
-    if ( ftruncate( fh, size ) ); /* gcc warns if return value of ftruncate() is "ignored" */
+    ret = ftruncate( fh, size );
+    (void)ret;
 #elif defined(__BORLANDC__)
     fh = _fileno( CurrFile[OBJ] );
     chsize( fh, size );

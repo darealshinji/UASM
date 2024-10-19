@@ -1022,7 +1022,7 @@ void WriteSymbols()
 		ld = fopen(pName, "wb");
 		sym = NULL;
 		fseek(ld, 4, SEEK_SET);
-		while (sym = SymEnum(sym, &i)) 
+		while ( (sym = SymEnum(sym, &i)) != NULL )
 		{
 			if ((sym->state == SYM_INTERNAL && sym->offset==0 && !sym->isproc) || sym->state == SYM_MACRO || sym->state == SYM_TMACRO || sym->state == SYM_GRP) continue;
 			if (sym->state == SYM_TYPE && sym->typekind != TYPE_TYPEDEF && sym->cvtyperef == 0) 

@@ -418,8 +418,7 @@ static ret_code InitStructuredVar( int index, struct asm_tok tokenarray[], const
             break;
 
         if ( f->next != NULL ) {
-
-            if ( tokenarray[i].token != T_FINAL )
+            if ( tokenarray[i].token != T_FINAL ) {
                 if ( tokenarray[i].token == T_COMMA )
                     i++;
                 else {
@@ -427,6 +426,7 @@ static ret_code InitStructuredVar( int index, struct asm_tok tokenarray[], const
                     while ( tokenarray[i].token != T_FINAL && tokenarray[i].token != T_COMMA )
                         i++;
                 }
+            }
         }
     }  /* end for */
 
@@ -1381,7 +1381,9 @@ ret_code data_dir( int i, struct asm_tok tokenarray[], struct asym *type_sym )
                 return ( ERROR );
             }
 #if FASTPASS
-            if ( StoreState ) FStoreLine(0);
+            if ( StoreState ) {
+                FStoreLine(0) {}
+            }
 #endif
             currofs = sym->offset;
             sym->isdata = TRUE; /* 'first_size' is valid */

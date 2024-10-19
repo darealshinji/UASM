@@ -6,23 +6,33 @@ TARGET1=uasm
 ifndef DEBUG
 DEBUG=0
 endif
+ifndef CLANG
+CLANG=0
+endif
 
 inc_dirs  = -IH
 
 #cflags stuff
 
 ifeq ($(DEBUG),0)
-extra_c_flags = -DNDEBUG -O2 -funsigned-char -Werror=write-strings -Wno-discarded-qualifiers
+extra_c_flags = -DNDEBUG -O2 -funsigned-char -Werror=write-strings
 OUTD=GccUnixR
 else
 extra_c_flags = -DDEBUG_OUT -g
 OUTD=GccUnixD
 endif
 
-c_flags =-D __UNIX__ $(extra_c_flags)
-
-#From CLANG 11+, default has changed from allowing global variables to be defined in the headers (-fcommon) to not allowing it (-fno-common)."   USE: make CC="clang -fcommon" -f gccLinux64.mak
+ifeq ($(CLANG),0)
 CC = gcc
+extra_c_flags += -Wno-discarded-qualifiers
+else
+CC = clang
+extra_c_flags += -Wno-incompatible-pointer-types-discards-qualifiers
+extra_c_flags += -Wno-pointer-sign -Wno-switch -Wno-enum-conversion -Wno-enum-compare -Wno-comment
+extra_c_flags += -Wno-unsequenced -Wno-pointer-bool-conversion -Wno-deprecated-non-prototype
+endif
+
+c_flags =-D __UNIX__ $(extra_c_flags)
 
 .SUFFIXES:
 .SUFFIXES: .c .o

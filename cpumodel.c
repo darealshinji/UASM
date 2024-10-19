@@ -425,13 +425,14 @@ ret_code SetCPU( enum cpu_info newcpu )
 
     DebugMsg1(("SetCPU: ModuleInfo.curr_cpu=%X, @Cpu=%X\n", ModuleInfo.curr_cpu, ModuleInfo.cpu ));
 
-    if ( ModuleInfo.model == MODEL_NONE )
+    if ( ModuleInfo.model == MODEL_NONE ) {
 #if AMD64_SUPPORT
         if ( ( ModuleInfo.curr_cpu & P_CPU_MASK) >= P_64 ) {
             SetDefaultOfssize( USE64 );
         } else
 #endif
             SetDefaultOfssize( ((ModuleInfo.curr_cpu & P_CPU_MASK) >= P_386) ? USE32 : USE16 );
+    }
 
     /* Set @Cpu */
     /* differs from Codeinfo cpu setting */

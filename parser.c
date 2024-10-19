@@ -1770,7 +1770,8 @@ static ret_code memory_operand( struct code_info *CodeInfo, unsigned CurrOpnd, s
     {
         return(EmitError(USE_OF_REGISTER_ASSUMED_TO_ERROR));
     }
-    if (index != EMPTY && GetValueSp(index) & OP_XMM == 0 && GetValueSp(index) & OP_YMM == 0 && StdAssumeTable[GetRegNo(index)].error)
+    if (index != EMPTY && (GetValueSp(index) & OP_XMM) == 0 &&
+        (GetValueSp(index) & OP_YMM) == 0 && StdAssumeTable[GetRegNo(index)].error)
     {
         return(EmitError(USE_OF_REGISTER_ASSUMED_TO_ERROR));
     }
@@ -1924,11 +1925,12 @@ static ret_code memory_operand( struct code_info *CodeInfo, unsigned CurrOpnd, s
 		
 		/* v2.10: added; IMAGEREL/SECTIONREL for indirect memory operands */
 		#if IMAGERELSUPP || SECTIONRELSUPP 
-        if ( fixup_type == FIX_OFF32 )
+        if ( fixup_type == FIX_OFF32 ) {
             if ( opndx->instr == T_IMAGEREL )
                 fixup_type = FIX_OFF32_IMGREL;
             else if ( opndx->instr == T_SECTIONREL )
                 fixup_type = FIX_OFF32_SECREL;
+        }
 		#endif
 
         /* no fixups are needed for memory operands of string instructions and XLAT/XLATB.
@@ -2158,11 +2160,12 @@ static ret_code process_register( struct code_info *CodeInfo, unsigned CurrOpnd,
             CodeInfo->iswide = 0;
 
 #if AMD64_SUPPORT
-        if ( CodeInfo->Ofssize == USE64 && regno >=4 && regno <=7 )
+        if ( CodeInfo->Ofssize == USE64 && regno >=4 && regno <=7 ) {
             if ( SpecialTable[regtok].cpu == P_86 )
                 CodeInfo->x86hi_used = 1; /* it's AH,BH,CH,DH */
             else
                 CodeInfo->x64lo_used = 1; /* it's SPL,BPL,SIL,DIL */
+        }
 #endif
         if ( StdAssumeTable[regno].error & (( regtok >= T_AH && regtok <= T_BH ) ? RH_ERROR : RL_ERROR ) ) 
 		{
@@ -2371,11 +2374,12 @@ static void HandleStringInstructions( struct code_info *CodeInfo, const struct e
     case T_MOVQ:
 #endif
         /* movs allows prefix for the second operand (=source) only */
-        if ( CodeInfo->prefix.RegOverride != EMPTY )
+        if ( CodeInfo->prefix.RegOverride != EMPTY ) {
             if ( opndx[OPND2].override == NULL )
                 EmitError( INVALID_INSTRUCTION_OPERANDS );
             else if ( CodeInfo->prefix.RegOverride == ASSUME_DS )
                 CodeInfo->prefix.RegOverride = EMPTY;
+        }
         break;
     case T_OUTS:
     case T_OUTSB:
@@ -2401,11 +2405,12 @@ static void HandleStringInstructions( struct code_info *CodeInfo, const struct e
         /* INSx, SCASx and STOSx don't allow any segment prefix != ES
          for the memory operand.
          */
-        if ( CodeInfo->prefix.RegOverride != EMPTY )
+        if ( CodeInfo->prefix.RegOverride != EMPTY ) {
             if ( CodeInfo->prefix.RegOverride == ASSUME_ES )
                 CodeInfo->prefix.RegOverride = EMPTY;
             else
                 EmitError( INVALID_INSTRUCTION_OPERANDS );
+        }
     }
 
     if ( opnd_clstab[CodeInfo->pinstr->opclsidx].opnd_type[opndidx] == OP_NONE ) {
@@ -2626,11 +2631,12 @@ static ret_code check_size( struct code_info *CodeInfo, const struct expr opndx[
         op1_size = OperandSize( op1, CodeInfo );
         op2_size = OperandSize( op2, CodeInfo );
         DebugMsg1(("check_size, MOVZX/MOVSX: op2_size=%u, opndx.memtype=%Xh, opndx.sym=%X\n", op2_size, opndx[OPND2].mem_type, opndx[OPND2].sym ));
-        if ( op2_size == 0 && Parse_Pass == PASS_2 )
+        if ( op2_size == 0 && Parse_Pass == PASS_2 ) {
             if ( op1_size == 2 ) {
                 EmitWarn( 2, SIZE_NOT_SPECIFIED_ASSUMING, "BYTE" );
             } else
                 EmitErr( INSTRUCTION_OPERAND_MUST_HAVE_SIZE );
+        }
         switch( op1_size ) {
 #if AMD64_SUPPORT
         case 8:
@@ -3325,7 +3331,8 @@ ret_code ParseLine(struct asm_tok tokenarray[]) {
 
 			case T_ID:
       
-				if (sym = IsType(tokenarray[i].string_ptr)) {
+				sym = IsType(tokenarray[i].string_ptr);
+				if (sym) {
 					return(data_dir(i, tokenarray, sym));
 				}
 				break;
@@ -3891,7 +3898,8 @@ dataInProc:
 	/* ******************************************************* */
 	if (CurrOpnd != j) 
 	{
-		for (; tokenarray[i].token != T_COMMA; i--);
+		for (; tokenarray[i].token != T_COMMA; i--)
+		{}
     if (CodeInfo.token < VEX_START) {
       return(EmitErr(SYNTAX_ERROR_EX, tokenarray[i].tokpos));
     }

@@ -1005,7 +1005,7 @@ vcall:
 		if (addr || psize > 8) { /* psize > 8 should happen only for vectorcall */
 			if (psize >= 4) {
 				if (proc->sym.langtype == LANG_VECTORCALL) {
-					if ((param->sym.mem_type == MT_TYPE)) {
+					if (param->sym.mem_type == MT_TYPE) {
 						t = param->sym.ttype;
 
 						if (vcallpass == 0 && opnd->kind == EXPR_REG && opnd->indirect == FALSE && reg < T_XMM6 && index < 6 && info->xyzused[(reg - T_XMM0)] != 0 && (index != reg - T_XMM0))
@@ -1580,15 +1580,22 @@ static int sysv_GetNextGPR(struct proc_info *info, int size)
 /* Return the first free Vector register useable in a SystemV invoke/call */
 static int sysv_GetNextVEC(struct proc_info *info, int size)
 {
-	//int base = 0;
 	if (info->firstVEC >= 8)
 		return(-1);
-	if(size == 16)
+
+	switch (size)
+	{
+	case 16:
 		return(sysV64_regsXMM[info->firstVEC++]);
-	if (size == 32)
+	case 32:
 		return(sysV64_regsYMM[info->firstVEC++]);
-	if (size == 64)
+	case 64:
 		return(sysV64_regsZMM[info->firstVEC++]);
+	default:
+		break;
+	}
+
+	return(-1);
 }
 
 /*
@@ -3051,8 +3058,8 @@ static int watc_param(struct dsym const *proc, int index, struct dsym *param, bo
 		i = 0;
 		if (reg[1] != NULL) {
 			char buffer[128];
-			short sreg;
-			if (sreg = GetSegmentPart(opnd, buffer, paramvalue))
+			short sreg = GetSegmentPart(opnd, buffer, paramvalue);
+			if (sreg)
 				AddLineQueueX("%r %s, %r", T_MOV, reg[0], sreg);
 			else
 				AddLineQueueX("%r %s, %s", T_MOV, reg[0], buffer);
@@ -3842,7 +3849,7 @@ static int PushInvokeParam(int i, struct asm_tok tokenarray[], struct dsym *proc
 						}
 						else if (pushsize == 2) { /* 16-bit code? */
 							if (opnd.mem_type == MT_BYTE) {
-								if (psize == 4)
+								if (psize == 4) {
 									if ((ModuleInfo.curr_cpu & P_CPU_MASK) < P_186) {
 										if (!(*r0flags & R0_X_CLEARED))
 											AddLineQueueX(" xor %r, %r", T_AX, T_AX);
@@ -3851,6 +3858,7 @@ static int PushInvokeParam(int i, struct asm_tok tokenarray[], struct dsym *proc
 									}
 									else
 										AddLineQueue(" push 0");
+								}
 								AddLineQueueX(" mov %r, %s", T_AL, fullparam);
 								if (!(*r0flags & R0_H_CLEARED)) {
 									AddLineQueueX(" mov %r, 0", T_AH);
@@ -4094,7 +4102,7 @@ static int PushInvokeParam(int i, struct asm_tok tokenarray[], struct dsym *proc
 									*r0flags |= R0_USED;
 									*r0flags &= ~R0_X_CLEARED;
 								}
-								if (psize != 1) /* v2.11: don't modify AH if paramsize is 1 */
+								if (psize != 1) { /* v2.11: don't modify AH if paramsize is 1 */
 									if (IS_SIGNED(opnd.mem_type)) {
 										AddLineQueue(" cbw");
 										*r0flags &= ~(R0_H_CLEARED | R0_X_CLEARED);
@@ -4103,6 +4111,7 @@ static int PushInvokeParam(int i, struct asm_tok tokenarray[], struct dsym *proc
 										AddLineQueueX(" mov %r, 0", T_AH);
 										*r0flags |= R0_H_CLEARED;
 									}
+								}
 							}
 							reg = regax[ModuleInfo.Ofssize];
 						}
@@ -4162,7 +4171,7 @@ static int PushInvokeParam(int i, struct asm_tok tokenarray[], struct dsym *proc
 				//asize = CurrWordSize;
 				asize = 2 << Ofssize;
 
-				if (psize < asize)  /* ensure that the default argsize (2,4,8) is met */
+				if (psize < asize) { /* ensure that the default argsize (2,4,8) is met */
 					if (psize == 0 && curr->sym.is_vararg) {
 						/* v2.04: push a dword constant in 16-bit */
 						if (asize == 2 &&
@@ -4170,9 +4179,10 @@ static int PushInvokeParam(int i, struct asm_tok tokenarray[], struct dsym *proc
 							psize = 4;
 						else
 							psize = asize;
-					}
-					else
+					} else {
 						psize = asize;
+					}
+				}
 
 				if ((ModuleInfo.curr_cpu & P_CPU_MASK) < P_186) {
 					*r0flags |= R0_USED;

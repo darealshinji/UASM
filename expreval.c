@@ -367,8 +367,7 @@ static ret_code  InitRecordVar( struct expr *opnd1, int index, struct asm_tok to
             break;
 
         if ( f->next != NULL ) {
-
-            if ( tokenarray[i].token != T_FINAL )
+            if ( tokenarray[i].token != T_FINAL ) {
                 if ( tokenarray[i].token == T_COMMA )
                     i++;
                 else {
@@ -376,6 +375,7 @@ static ret_code  InitRecordVar( struct expr *opnd1, int index, struct asm_tok to
                     while ( tokenarray[i].token != T_FINAL && tokenarray[i].token != T_COMMA )
                         i++;
                 }
+            }
         }
     }  /* end for */
     opnd1->llvalue = dwRecInit;

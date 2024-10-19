@@ -353,7 +353,7 @@ int RunMacro( struct dsym *macro, int idx, struct asm_tok tokenarray[], char *ou
                             continue;
                         }
                         /* count brackets */
-                        if ( parm_end_delim == T_CL_BRACKET )
+                        if ( parm_end_delim == T_CL_BRACKET ) {
                             if ( tokenarray[i].token == T_OP_BRACKET )
                                 cnt++;
                             else if ( tokenarray[i].token == T_CL_BRACKET ) {
@@ -361,6 +361,7 @@ int RunMacro( struct dsym *macro, int idx, struct asm_tok tokenarray[], char *ou
                                     break;
                                 cnt--;
                             }
+                        }
 
                         /* stop if undelimited string occurs (need to scan for '!') */
                         if ( tokenarray[i].token == T_STRING && tokenarray[i].string_delim == NULLC )
@@ -483,7 +484,7 @@ int RunMacro( struct dsym *macro, int idx, struct asm_tok tokenarray[], char *ou
                      * text macros are expanded only selectively
                      */
                     if ( tokenarray[idx].token == T_ID ) {
-                        if ( sym = SymSearch( tokenarray[idx].string_ptr ) ) {
+                        if ( (sym = SymSearch( tokenarray[idx].string_ptr )) != NULL ) {
                             if ( sym->state == SYM_MACRO && sym->isdefined == TRUE &&
                                 sym->isfunc == TRUE && tokenarray[idx+1].token == T_OP_BRACKET ) {
                                 bool is_exitm2;

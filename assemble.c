@@ -688,7 +688,7 @@ static void CmdlParamsInit( int pass )
         add_cmdline_tmacros();
         add_incpaths();
         if ( Options.ignore_include == FALSE )
-            if ( env = getenv( "INCLUDE" ) )
+            if ( (env = getenv( "INCLUDE" )) != NULL )
                 AddStringToIncludePath( env );
     }
     DebugMsg(("CmdlParamsInit exit\n"));
@@ -1203,10 +1203,11 @@ static int OnePass( void )
             DebugMsg1(("OnePass(%u) cur/nxt=%X/%X src=%X.%u mlvl=%u: >%s<\n", Parse_Pass+1, LineStoreCurr, LineStoreCurr->next, LineStoreCurr->srcfile, LineStoreCurr->lineno, MacroLevel, LineStoreCurr->line ));
             ModuleInfo.CurrComment = NULL; /* v2.08: added (var is never reset because GetTextLine() isn't called) */
 #if USELSLINE
-            if ( Token_Count = Tokenize( LineStoreCurr->line, 0, ModuleInfo.tokenarray, TOK_DEFAULT ) )
+            Token_Count = Tokenize( LineStoreCurr->line, 0, ModuleInfo.tokenarray, TOK_DEFAULT );
 #else
-            if ( Token_Count = Tokenize( CurrSource, 0, ModuleInfo.tokenarray, TOK_DEFAULT ) )
+            Token_Count = Tokenize( CurrSource, 0, ModuleInfo.tokenarray, TOK_DEFAULT );
 #endif
+            if ( Token_Count > 0 )
                 ParseLine( ModuleInfo.tokenarray );
             LineStoreCurr = LineStoreCurr->next;
         }
@@ -1414,24 +1415,29 @@ void close_files( void )
 
 /* get default file extension for error, object and listing files */
 
+#if MZ_SUPPORT || PE_SUPPORT
+#if PE_SUPPORT
+#define SUB_FORMAT_IS_MZ_OR_PE  (Options.sub_format == SFORMAT_MZ || Options.sub_format == SFORMAT_PE)
+#else
+#define SUB_FORMAT_IS_MZ_OR_PE  (Options.sub_format == SFORMAT_MZ)
+#endif
+#endif
+
 static char *GetExt( int type )
 /*****************************/
 {
     switch ( type ) {
     case OBJ:
 #if BIN_SUPPORT
-        if ( Options.output_format == OFORMAT_BIN )
-#if MZ_SUPPORT || PE_SUPPORT
-            if ( Options.sub_format == SFORMAT_MZ
-#if PE_SUPPORT
-                || Options.sub_format == SFORMAT_PE
-#endif
-               )
+        if ( Options.output_format == OFORMAT_BIN ) {
+#ifdef SUB_FORMAT_IS_MZ_OR_PE
+            if ( SUB_FORMAT_IS_MZ_OR_PE ) {
                 return( EXE_EXT );
-            else
+            }
 #endif
-                return( BIN_EXT );
+            return( BIN_EXT );
 #endif
+        }
         return( OBJ_EXT );
     case LST:
         return( LST_EXT );
