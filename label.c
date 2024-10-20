@@ -76,7 +76,7 @@ struct asym *CreateLabel( const char *name, enum memtype mem_type, struct qualif
 /*********************************************************************************************************/
 {
     struct asym         *sym;
-    uint_32             addr;
+    uint_32             addr = 0;
     char                buffer[20];
 
     DebugMsg1(("CreateLabel(%s, memtype=%Xh, %" I32_SPEC "Xh, %u) enter\n", name, mem_type, ti, bLocal));

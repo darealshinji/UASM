@@ -544,14 +544,14 @@ enum opt_queues {
 };
 
 enum prologue_epilogue_mode {
-    PEM_DEFAULT, /* must be value 0 */
+    PEM_DEFAULT = 0, /* must be value 0 */
     PEM_MACRO,
     PEM_NONE
 };
 
 /* Stack distance */
 enum dist_type {
-    //STACK_NONE,
+    STACK_NONE,
     STACK_NEAR,
     STACK_FAR,
 };

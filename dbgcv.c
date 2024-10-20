@@ -552,8 +552,8 @@ static void cv_write_type_procedure(struct dbgcv* cv, struct asym* sym, int cnt)
 	int size = sizeof(CV_PROCEDURE);
 	int leaf = LF_PROCEDURE;
 	int type = sizeof(CV_typ_t);
-	CV_typ_t* p_32;
-	CV_typ16_t* p_16;
+	CV_typ_t* p_32 = NULL;
+	CV_typ16_t* p_16 = NULL;
 	struct dsym* param;
 
 	if (Options.debug_symbols == CV_SIGNATURE_C7) {
@@ -626,10 +626,10 @@ static void cv_write_type_procedure(struct dbgcv* cv, struct asym* sym, int cnt)
 static void cv_write_type(struct dbgcv* cv, struct asym* sym)
 {
 	struct dsym* type = (struct dsym*)sym;
-	uint_8* tmp;
+	uint_8* tmp = NULL;
 	int		namesize;
 	int		typelen;
-	int		size;
+	int		size = 0;
 	int		leaf;
 	CV_prop_t	property;
 	struct cv_counters count;
@@ -816,16 +816,17 @@ static void cv_write_symbol(struct dbgcv* cv, struct asym* sym)
 	enum fixup_types rlctype;
 	uint_8	Ofssize;
 	struct fixup* fixup;
-	struct dsym* proc;
+	struct dsym* proc = NULL;
 	struct dsym* lcl;
 	int		i, j, k;
 	int		cnt[2];
 	struct	dsym* locals[2];
-	struct	dsym* q;
+	struct	dsym* q = NULL;
 	int		size;
 	int		leaf;
 	uint_16	typeref;
 
+	j = 0;
 	Ofssize = GetSymOfssize(sym);
 	len = GetCVStructLen(sym, Ofssize);
 	cv->ps = checkflush(cv->symbols, cv->ps, 1 + sym->name_size + len, cv->param);
@@ -1467,7 +1468,6 @@ void cv_write_debug_tables(struct dsym* symbols, struct dsym* types, void* pv)
 
 				while (Queue) {
 					CV_Line_t* Line;
-					CV_Line_t* Prev;
 					int fileStart = Queue->srcfile;
 
 					if (Queue->number == 0)
@@ -1475,7 +1475,6 @@ void cv_write_debug_tables(struct dsym* symbols, struct dsym* types, void* pv)
 
 					File->offFile = cv.files[fileStart].offset;
 					File->cbBlock = 12;
-					Prev = NULL;
 
 					int fileCur = fileStart;
 
@@ -1520,7 +1519,6 @@ void cv_write_debug_tables(struct dsym* symbols, struct dsym* types, void* pv)
 								File->offFile = cv.files[Queue->srcfile].offset;
 								File->cbBlock = 12;
 								File->nLines = 0;
-								Prev = NULL;
 							}
 							fileCur = Queue->srcfile;
 							linenum = Queue->number;
@@ -1545,7 +1543,6 @@ void cv_write_debug_tables(struct dsym* symbols, struct dsym* types, void* pv)
 						Line->linenumStart = linenum;
 						Line->deltaLineEnd = 0;
 						Line->fStatement = 1;
-						Prev = Line;
 					}
 
 					/* Finalize last line queue record*/

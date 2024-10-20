@@ -210,7 +210,7 @@ ret_code SimplifiedSegDir( int i, struct asm_tok tokenarray[] )
  */
 {
     const char  *name = NULL;
-    char        init;
+    char        init = FALSE;
     int         type;
     struct expr opndx;
 

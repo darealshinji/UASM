@@ -67,8 +67,8 @@ static const struct typeinfo ModelAttrValue[] = {
     { OPSYS_OS2,      INIT_OS         },
 };
 
-static struct asym *sym_CodeSize  ; /* numeric. requires model */
-static struct asym *sym_DataSize  ; /* numeric. requires model */
+struct asym *sym_CodeSize  ; /* numeric. requires model */
+struct asym *sym_DataSize  ; /* numeric. requires model */
 static struct asym *sym_Model     ; /* numeric. requires model */
 struct asym *sym_Interface ; /* numeric. requires model */
 struct asym *sym_Cpu       ; /* numeric. This is ALWAYS set */
@@ -247,8 +247,8 @@ ret_code ModelDirective( int i, struct asm_tok tokenarray[] )
 {
     enum model_type model;
     enum lang_type language;
-    enum dist_type distance;
-    enum os_type ostype;
+    enum dist_type distance = STACK_NONE;
+    enum os_type ostype = OPSYS_DOS;
     int index;
     uint_8 init;
     uint_8 initv;

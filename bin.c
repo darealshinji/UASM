@@ -434,7 +434,7 @@ static ret_code DoFixup( struct dsym *curr, struct calc_param *cp )
     struct dsym *seg;
     uint_32 value;
 #if PE_SUPPORT && AMD64_SUPPORT
-    uint_64 value64;
+    uint_64 value64 = 0;
 #endif
     uint_32 offset;  /* v2.07 */
     struct fixup *fixup;
@@ -1245,9 +1245,9 @@ static void pe_set_values( struct calc_param *cp )
     struct dsym *pehdr;
     struct dsym *objtab;
     struct dsym *reloc = NULL;
-    struct IMAGE_PE_HEADER32 *ph32;
+    struct IMAGE_PE_HEADER32 *ph32 = NULL;
 #if AMD64_SUPPORT
-    struct IMAGE_PE_HEADER64 *ph64;
+    struct IMAGE_PE_HEADER64 *ph64 = NULL;
 #endif
     struct IMAGE_FILE_HEADER *fh;
     struct IMAGE_SECTION_HEADER *section;
@@ -1516,16 +1516,15 @@ static ret_code bin_write_module( struct module_info *modinfo )
     uint_32 sizetotal;
     int i;
     int first;
-    uint_32 sizeheap;
+    uint_32 sizeheap = 0;
 #if MZ_SUPPORT
     struct IMAGE_DOS_HEADER *pMZ;
-    uint_16 reloccnt;
+    uint_16 reloccnt = 0;
     uint_32 sizemem;
     struct dsym *stack = NULL;
-    uint_8  *hdrbuf;
+    uint_8  *hdrbuf = NULL;
 #endif
     struct calc_param cp = { TRUE, 0 };
-	uint_32 origsize;
 	uint_32 writesize;
 	uint_8 *codeptr;
 
@@ -1554,10 +1553,12 @@ static ret_code bin_write_module( struct module_info *modinfo )
     }
     cp.fileoffset = cp.sizehdr;
 
+#if MZ_SUPPORT
     if ( cp.sizehdr ) {
         hdrbuf = LclAlloc( cp.sizehdr );
         memset( hdrbuf, 0, cp.sizehdr );
     }
+#endif
     cp.entryoffset = -1;
 
     /* set starting offsets for all sections */
@@ -1704,6 +1705,7 @@ static ret_code bin_write_module( struct module_info *modinfo )
     }
 #endif
 
+#if MZ_SUPPORT
     if ( cp.sizehdr ) {
         if ( fwrite( hdrbuf, 1, cp.sizehdr, CurrFile[OBJ] ) != cp.sizehdr )
             WriteError();
@@ -1713,6 +1715,7 @@ static ret_code bin_write_module( struct module_info *modinfo )
 #endif
         LclFree( hdrbuf );
     }
+#endif
 
 #ifdef DEBUG_OUT
     for( curr = SymTables[TAB_SEG].head; curr; curr = curr->next ) {
@@ -1772,7 +1775,6 @@ static ret_code bin_write_module( struct module_info *modinfo )
 			if (ModuleInfo.flat)
 			{
 				/* For flat type we have to write out one byte at a time and verify it against the org fixup list */
-				origsize = size;
 				codeptr = curr->e.seginfo->CodeBuffer;
 				while (codeptr < (curr->e.seginfo->CodeBuffer+size))
 				{

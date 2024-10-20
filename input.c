@@ -586,7 +586,6 @@ FILE *SearchFile( const char *path, bool queue )
 {
     FILE        *file = NULL;
     struct src_item *fl;
-    const char  *fn;
     bool        isabs;
     char        fullpath[FILENAME_MAX];
 
@@ -594,7 +593,7 @@ FILE *SearchFile( const char *path, bool queue )
 
     //_splitpath( path, drive, dir, fname, ext );
     //DebugMsg1(("SearchFile(): drive=%s, dir=%s, fname=%s, ext=%s\n", drive, dir, fname, ext ));
-    fn = GetFNamePart( path );
+    GetFNamePart( path );
 
     /* if no absolute path is given, then search in the directory
      * of the current source file first!

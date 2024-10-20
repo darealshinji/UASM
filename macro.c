@@ -289,7 +289,7 @@ ret_code StoreMacro( struct dsym *macro, int i, struct asm_tok tokenarray[], boo
     struct macro_info   *info;
     char                *src;
     char                *token;
-    int                 mindex;
+    int                 mindex = 0;
     struct mparm_list   *paranode;
     struct srcline      **nextline;
 #ifdef DEBUG_OUT
@@ -318,7 +318,7 @@ ret_code StoreMacro( struct dsym *macro, int i, struct asm_tok tokenarray[], boo
             info->parmlist = NULL;
         }
 
-        for( paranode = info->parmlist, mindex = 0; i < Token_Count ; paranode++ ) {
+        for( paranode = info->parmlist; i < Token_Count ; paranode++ ) {
 
             token = tokenarray[i].string_ptr;
             /* Masm accepts reserved words and instructions as parameter
@@ -608,7 +608,7 @@ ret_code StoreAutoMacro(struct dsym *macro, int i, struct asm_tok tokenarray[], 
 	struct macro_info   *info;
 	char                *src;
 	char                *token;
-	int                 mindex;
+	int                 mindex = 0;
 	struct mparm_list   *paranode;
 	struct srcline      **nextline;
 #ifdef DEBUG_OUT
@@ -640,7 +640,7 @@ ret_code StoreAutoMacro(struct dsym *macro, int i, struct asm_tok tokenarray[], 
 			info->parmlist = NULL;
 		}
 
-		for (paranode = info->parmlist, mindex = 0; i < Token_Count; paranode++) {
+		for (paranode = info->parmlist; i < Token_Count; paranode++) {
 
 			token = tokenarray[i].string_ptr;
 			/* Masm accepts reserved words and instructions as parameter

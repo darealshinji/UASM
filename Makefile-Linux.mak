@@ -16,6 +16,8 @@ inc_dirs  = -IH
 
 ifeq ($(DEBUG),0)
 extra_c_flags = -DNDEBUG -O2 -funsigned-char -Werror=write-strings
+extra_c_flags += -Wunused -Wuninitialized
+extra_c_flags += -Wno-switch -Wno-enum-conversion -Wno-enum-compare
 OUTD=GccUnixR
 else
 extra_c_flags = -DDEBUG_OUT -g
@@ -27,7 +29,6 @@ CC = gcc
 extra_c_flags += -Wno-discarded-qualifiers
 else
 CC = clang
-extra_c_flags += -Wno-switch -Wno-enum-conversion -Wno-enum-compare
 endif
 
 c_flags =-D __UNIX__ $(extra_c_flags)

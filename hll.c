@@ -199,9 +199,8 @@ static const char neg_cjmptype[] = { 0, 1, 0, 0, 1, 1 };
 /* in Masm, there's a nesting level limit of 20. In Uasm, there's
 * currently no limit.
 */
-#ifdef __WATCOMC__
-static _inline char HexDigit(char x)
-#elif defined(_MSC_VER)
+/*
+#if defined(_MSC_VER) || defined(__WATCOMC__)
 static _inline char HexDigit(char x)
 #else
 static char HexDigit(char x)
@@ -210,6 +209,7 @@ static char HexDigit(char x)
     x &= 0xF;
     return((x > 9) ? (x - 10 + 'A') : (x + '0'));
 }
+*/
 
 #ifdef DEBUG_OUT
 static unsigned evallvl;
@@ -457,6 +457,7 @@ static char* RenderSimdInstr(char* dst, const char* instr, int start1, int end1,
 }
 
 /* render a Simd instruction using a temporary float immediate macro FP4/FP8 */
+#if 0
 static char* RenderSimdInstrTM(char* dst, const char* instr, int start1, int end1, int start2, int end2, struct asm_tok tokenarray[], enum c_bop op, bool isDouble)
 /*******************************************************************************************************************************/
 {
@@ -502,6 +503,7 @@ static char* RenderSimdInstrTM(char* dst, const char* instr, int start1, int end
     DebugMsg1(("%u RenderInstr(%s)=>%s<\n", evallvl, instr, old));
     return(dst);
 }
+#endif
 
 static char* GetLabelStr(int_32 label, char* buff)
 /**************************************************/
@@ -1832,9 +1834,9 @@ ret_code HllEndDir(int i, struct asm_tok tokenarray[])
     int                 cmd = tokenarray[i].tokval;
     int                 j, n;
 #if AMD64_SUPPORT
-    __int64             temp;
+    __int64             temp = 0;
 #else
-    int                 temp;
+    int                 temp = 0;
 #endif
     int                 acnt = 0;
     int                 bcnt = 0;

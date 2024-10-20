@@ -52,6 +52,7 @@ static const char* const SymDebName[DBGS_MAX] = { ".debug$S", ".debug$T" };
 
 static const char szdrectve[] = { ".drectve" };
 
+/*
 static const IMAGE_SYMBOL isFeat00 = {
     {"@feat.00"},
      1,
@@ -60,6 +61,8 @@ static const IMAGE_SYMBOL isFeat00 = {
      IMAGE_SYM_CLASS_STATIC,
      0
 };
+*/
+
 #if COMPID
 static const IMAGE_SYMBOL isCompId = {
     {"@comp.id"},
@@ -398,7 +401,6 @@ static uint_32 coff_write_symbols( struct module_info *modinfo, struct coffmod *
     int         type;
     int         storageclass;
     int         aux;
-    int         count;
 
 #if COMPID
     /* write "@comp.id" entry */
@@ -694,9 +696,8 @@ static uint_32 SetSymbolIndices( struct module_info *ModuleInfo, struct coffmod 
     struct asym  *sym;
     uint_32 index;
     uint_32 i;
-    struct asym *lastfproc;
+    struct asym *lastfproc = NULL;
     unsigned lastfile = 0;
-    int section;
 
     index = 0;
     cm->lastproc = NULL;

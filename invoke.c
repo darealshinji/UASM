@@ -488,7 +488,7 @@ static int ms64_param(struct dsym const *proc, int index, struct dsym *param, bo
 {
 	uint_32 size;
 	uint_32 psize;
-	int reg;
+	int reg = 0;
 	int reg2;
 	int i;
 	int j = 0;
@@ -2031,7 +2031,7 @@ static int sysv_param(struct dsym const *proc, int index, struct dsym *param, bo
 /************************************************************************************************************************************************/
 {
 	uint_32 psize;
-	int reg;
+	int reg = 0;
 	int reg2;
 	int i;
 	int base;
@@ -3242,7 +3242,6 @@ static int PushInvokeParam(int i, struct asm_tok tokenarray[], struct dsym *proc
 
 	struct asym *lbl = NULL;
 	struct dsym *curseg;
-	struct dsym *prev;
 	struct dsym *currs;
 	size_t slen;
 	char *pSrc;
@@ -3277,9 +3276,8 @@ static int PushInvokeParam(int i, struct asm_tok tokenarray[], struct dsym *proc
 				// Preserve current Segment.
 				curseg = ModuleInfo.currseg;
 				// Find Data Segment.
-				prev = NULL;
 				currs = NULL;
-				for (currs = SymTables[TAB_SEG].head; currs && currs->next; prev = currs, currs = currs->next)
+				for (currs = SymTables[TAB_SEG].head; currs && currs->next; currs = currs->next)
 				{
 					if (strcmp(currs->sym.name, "_DATA") == 0)
 						break;
@@ -3353,9 +3351,8 @@ static int PushInvokeParam(int i, struct asm_tok tokenarray[], struct dsym *proc
 				// Preserve current Segment.
 				curseg = ModuleInfo.currseg;
 				// Find Data Segment.
-				prev = NULL;
 				currs = NULL;
-				for (currs = SymTables[TAB_SEG].head; currs && currs->next; prev = currs, currs = currs->next)
+				for (currs = SymTables[TAB_SEG].head; currs && currs->next; currs = currs->next)
 				{
 					if (strcmp(currs->sym.name, "_DATA") == 0)
 						break;
@@ -4292,7 +4289,7 @@ ret_code InvokeDirective(int i, struct asm_tok tokenarray[])
 	int            size;
 	int            parmpos;
 	int            namepos;
-	int            porder;
+	int            porder = 0;
 	int            j;
 	uint_8         r0flags = 0;
 	struct proc_info *info;

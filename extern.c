@@ -893,7 +893,7 @@ ret_code PublicDirective( int i, struct asm_tok tokenarray[] )
     char                *token;
     struct asym         *sym;
     //struct dsym       *dir;
-    char                skipitem;
+    char                skipitem = FALSE;
     enum lang_type      langtype;
 
     DebugMsg1(("PublicDirective(%u) enter\n", i));
